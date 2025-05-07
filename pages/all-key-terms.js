@@ -8,14 +8,18 @@ import { useEffect, useState } from "react";
 import ai from "@/lib/ai";
 import { keyEventsQuestions } from "@/lib/questionLibrary";
 import { useSync } from "@/lib/sync";
+import useMedia from "@/lib/media";
 
 function Question({ question, onExplain, onSave, loading, startedLoadingAt }) {
+  const { sm } = useMedia();
+
   return (
     <Card style={{
       display: "flex",
       padding: "0.5rem",
       flexDirection: "column",
       width: "1000px",
+      maxWidth: "100%",
       margin: "0 auto",
       textAlign: "left",
       borderColor: question.incorrect ? "red" : question.correct ? "blue" : question.partial ? "orange" : undefined,
@@ -39,16 +43,17 @@ function Question({ question, onExplain, onSave, loading, startedLoadingAt }) {
       {(question.answer || question.feedback || question.review) && <>
         <div style={{
           display: "grid",
-          gridTemplateColumns: (question.feedback && question.review ? "1fr 1fr" : "1fr"),
+          gridTemplateColumns: sm ? (question.feedback && question.review ? "1fr 1fr" : "1fr") : "1fr",
+
           gap: "1rem",
         }}>
           {question.feedback ? <div>
             <Text h5 margin={0} marginTop={2}>Feedback</Text>
-            <Text margin={0} marginTop={1 / 2} marginBottom={2}>{question.feedback || "No feedback provided"}</Text>
+            <Text margin={0} marginTop={1 / 2} marginBottom={sm ? 2 : 1}>{question.feedback || "No feedback provided"}</Text>
 
           </div> : null}
           {question.review ? <div>
-            <Text h5 margin={0} marginTop={2}>Review</Text>
+            <Text h5 margin={0} marginTop={sm ? 2 : 0}>Review</Text>
             <Text margin={0} marginTop={1 / 2} marginBottom={2}>{question.review || "No review provided"}</Text>
           </div> : null}
 
@@ -61,6 +66,7 @@ function Question({ question, onExplain, onSave, loading, startedLoadingAt }) {
         padding: "16px 16px 8px 16px",
         display: "flex",
         gap: "1rem",
+        flexWrap: sm ? undefined : "wrap",
       }}>
         <Button scale={1 / 2} icon={<HelpCircle />} auto onClick={onExplain} disabled={loading || question.answer}>Explain Answer</Button>
         <Button scale={1 / 2} icon={<Plus />} auto onClick={onSave}>Save to Study List</Button>
@@ -105,7 +111,7 @@ function IndefiniteProgress({ startedAt, style }) {
 }
 
 export default function Home() {
-  const { unit } = useSync();
+  const { displayUnit } = useSync();
   const [question, setQuestion] = useState(null);
   const [completedQuestions, setCompletedQuestions] = useState([]);
 
@@ -118,6 +124,8 @@ export default function Home() {
   }
 
   const [answer, setAnswer] = useState("");
+
+
 
 
 
@@ -179,6 +187,8 @@ export default function Home() {
 
   }
 
+  const { sm } = useMedia();
+
 
   return (
     <>
@@ -192,7 +202,7 @@ export default function Home() {
         <Text h2 mb={0} mt={0}>APUSH<em>.pro</em> Key Terms Practice</Text>
         <Text h3 mt={0} mb={3} style={{
           color: "#555",
-        }}>AP US History Study Guide</Text>
+        }}>{displayUnit}</Text>
 
 
         {question && <Question question={question} onExplain={() => {
@@ -204,7 +214,7 @@ export default function Home() {
         <div style={{
           position: "fixed",
           bottom: "20px",
-          width: "calc(100% - 6rem)",
+          width: sm ? "calc(100% - 6rem)" : "calc(100% - 2rem)",
           left: "50%",
           transform: "translateX(-50%)",
           padding: "1rem",

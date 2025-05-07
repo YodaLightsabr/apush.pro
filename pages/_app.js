@@ -1,3 +1,4 @@
+import useMedia from "@/lib/media";
 import { SyncProvider, useSync } from "@/lib/sync";
 import "@/styles/globals.css";
 import { GeistProvider, CssBaseline, Text, Page, Button, Drawer } from '@geist-ui/core'
@@ -24,9 +25,12 @@ function StudyListButton() {
 
 function Unit () {
   const { displayUnit } = useSync();
+  const { sm } = useMedia();
 
   return (
-    <Text h4 margin={0}>{displayUnit || "All Units"}</Text>
+    <Text h4 margin={0} style={{
+      display: sm ? "block" : "none",
+    }}>{displayUnit || "All Units"}</Text>
   );
 }
 

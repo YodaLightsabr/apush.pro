@@ -6,11 +6,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Button, Card, Page, Tabs, Text } from '@geist-ui/core'
 import Link from "next/link";
 import { useSync } from "@/lib/sync";
+import useMedia from "@/lib/media";
 
 
 
 export default function Home() {
   const { unit, setUnit, displayUnit } = useSync();
+  const { xs, sm, md, lg, xl } = useMedia();
   return (
     <>
       <Head>
@@ -28,6 +30,7 @@ export default function Home() {
           <Tabs initialValue="all" style={{
             width: "min-content",
             margin: "0 auto",
+            maxWidth: "calc(100% - 12px)",
           }} onChange={setUnit} value={unit}>
             <Tabs.Item label="All Units" value="all" />
             <Tabs.Item label="Units 1 & 2" value="1/2" />
@@ -44,6 +47,7 @@ export default function Home() {
           
           <div style={{
             display: "flex",
+            flexDirection: md ? "row" : "column",
             justifyContent: "center",
             alignItems: "center",
             gap: "2rem",
