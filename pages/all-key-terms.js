@@ -135,8 +135,9 @@ export default function Home() {
 
     const availableQuestions = keyEventsQuestions.filter(potentialQuestion => {
       if (completedQuestions.includes(potentialQuestion.question)) return false;
+      if (unit == "all") return true;
       const unitFilter = unit == "1/2" ? 1 : +unit;
-      if (unitFilter == "all") return true;
+  
       return potentialQuestion.unit == unitFilter;
     })
 
