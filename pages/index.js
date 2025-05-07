@@ -64,8 +64,8 @@ export default function Home() {
                 gap: "1rem",
               }}>
               <Text h3 mt={0} mb={1}>{displayUnit} Topic Practice</Text>
-                <Link href="/all-key-terms"><Button type="secondary-light" auto>All Key Terms</Button></Link>
-                <Link href="#"><Button disabled type="secondary-light" auto>Key Events</Button></Link>
+                <Link href="/topic-practice/key-terms"><Button type="secondary-light" auto>All Key Terms</Button></Link>
+                <Link href="/topic-practice/key-events"><Button type="secondary-light" auto>Key Events</Button></Link>
                 <Link href="#"><Button disabled type="secondary-light" auto>Key People</Button></Link>
               </div>
             </Card>

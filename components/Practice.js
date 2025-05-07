@@ -9,108 +9,11 @@ import ai from "@/lib/ai";
 import { keyEventsQuestions } from "@/lib/questionLibrary";
 import { useSync } from "@/lib/sync";
 import useMedia from "@/lib/media";
-
-function Question({ question, onExplain, onSave, loading, startedLoadingAt }) {
-  const { sm } = useMedia();
-
-  return (
-    <Card style={{
-      display: "flex",
-      padding: "0.5rem",
-      flexDirection: "column",
-      width: "1000px",
-      maxWidth: "100%",
-      margin: "0 auto",
-      textAlign: "left",
-      borderColor: question.incorrect ? "red" : question.correct ? "blue" : question.partial ? "orange" : undefined,
-    }}>
-      <div style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: "1rem",
-      }}>
-        <Text h4 margin={0}>All Key Terms</Text>
-        <Text h4 margin={0} type="secondary">Question {question.number}</Text>
-      </div>
-      <Text py={1}>{question.question}</Text>
-      {(question.answer || question.feedback) && <><Text h5 margin={0}>Your Answer</Text>
-            <Text blockquote margin={0} marginTop={1 / 2} padding={3 / 4} style={{
-              fontStyle: "italic",
-            }}>{question.answer || "No answer provided"}</Text></>}
-
-      {(question.answer || question.feedback || question.review) && <>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: sm ? (question.feedback && question.review ? "1fr 1fr" : "1fr") : "1fr",
-
-          gap: "1rem",
-        }}>
-          {question.feedback ? <div>
-            <Text h5 margin={0} marginTop={2}>Feedback</Text>
-            <Text margin={0} marginTop={1 / 2} marginBottom={sm ? 2 : 1}>{question.feedback || "No feedback provided"}</Text>
-
-          </div> : null}
-          {question.review ? <div>
-            <Text h5 margin={0} marginTop={sm ? 2 : 0}>Review</Text>
-            <Text margin={0} marginTop={1 / 2} marginBottom={2}>{question.review || "No review provided"}</Text>
-          </div> : null}
-
-        </div>
+import Question from "./Question";
 
 
-      </>}
 
-      <Card.Footer style={{
-        padding: "16px 16px 8px 16px",
-        display: "flex",
-        gap: "1rem",
-        flexWrap: sm ? undefined : "wrap",
-      }}>
-        <Button scale={1 / 2} icon={<HelpCircle />} auto onClick={onExplain} disabled={loading || question.answer}>Explain Answer</Button>
-        <Button scale={1 / 2} icon={<Plus />} auto onClick={onSave}>Save to Study List</Button>
-
-        <div style={{ flexGrow: 1 }}>
-          {loading ? <IndefiniteProgress startedAt={startedLoadingAt} style={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            width: "100%",
-          }} /> : null}
-        </div>
-        {question.correct && <Text h5 type="success">Correct</Text>}
-        {question.incorrect && <Text h5 type="error">Incorrect</Text>}
-        {question.partial && <Text h5 type="warning">Partial</Text>}
-      </Card.Footer>
-    </Card>
-
-  );
-}
-
-function IndefiniteProgress({ startedAt, style }) {
-  const [currentProgress, setCurrentProgress] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startedAt;
-      const x = elapsed / 1000;
-      setCurrentProgress(1 - (0.5) ** (elapsed / 1000));
-      setCurrentProgress(0.9 - (0.3) * (1 / 2) ** x - (0.6) * (1 / 9) ** x);
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div style={style}>
-      <Progress value={currentProgress * 100} style={{
-        animation: "0.2s all",
-      }} />
-    </div>
-  )
-}
-
-export default function Home() {
+export default function Practice({ name, questionBank }) {
   const { displayUnit } = useSync();
   const [question, setQuestion] = useState(null);
   const [completedQuestions, setCompletedQuestions] = useState([]);
@@ -131,9 +34,6 @@ export default function Home() {
   const [answer, setAnswer] = useState("");
 
 
-
-
-
   const nextQuestion = () => {
     if (question?.question) {
       setCompletedQuestions(completedQuestions => {
@@ -146,11 +46,11 @@ export default function Home() {
 
     const unit = localStorage.getItem("unit");
 
-    const availableQuestions = keyEventsQuestions.filter(potentialQuestion => {
+    const availableQuestions = questionBank.filter(potentialQuestion => {
       if (completedQuestions.includes(potentialQuestion.question)) return false;
       if (unit == "all") return true;
       const unitFilter = unit == "1/2" ? 1 : +unit;
-  
+
       return potentialQuestion.unit == unitFilter;
     })
 
@@ -220,14 +120,8 @@ Do not include any other text or explanation. The JSON should look like this: { 
 
   return (
     <>
-      <Head>
-        <title>APUSH.pro</title>
-        <meta name="description" content="Study APUSH & get a 5 on Friday" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <div>
-        <Text h2 mb={0} mt={0}>APUSH<em>.pro</em> Key Terms Practice</Text>
+        <Text h2 mb={0} mt={0}>APUSH<em>.pro</em> {name}</Text>
         <Text h3 mt={0} mb={3} style={{
           color: "#555",
         }}>{displayUnit || "All Units"}</Text>
@@ -237,7 +131,7 @@ Do not include any other text or explanation. The JSON should look like this: { 
           setAnswer("Please explain this for me");
           checkAnswer("Please explain this for me");
         }} loading={state == "loadingAnswer"} startedLoadingAt={stateUpdatedAt} />}
-        
+
 
         <div style={{
           position: "fixed",
@@ -279,7 +173,7 @@ Do not include any other text or explanation. The JSON should look like this: { 
             <Text type="success" span>{stats.correct} correct</Text> •
             <Text type="warning" span>{stats.partial} partial</Text> •
             <Text type="error" span>{stats.incorrect} incorrect</Text>
-            </Text>
+          </Text>
           {state == "answer" ? <Button auto onClick={nextQuestion} icon={<ArrowRight />} type="success-light" style={{
             position: "absolute",
             right: "max(calc(50% - 400px + 1rem), 2rem)",
@@ -297,3 +191,4 @@ Do not include any other text or explanation. The JSON should look like this: { 
     </>
   );
 }
+
