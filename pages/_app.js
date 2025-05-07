@@ -71,7 +71,7 @@ export default function App({ Component, pageProps }) {
 
         <Page style={{
           textAlign: "center",
-          height: "calc(100vh - 69px)!important",
+          height: "calc(100vh - 73px)!important",
           overflowY: "auto",
           minHeight: "0px",
           marginLeft: "0px",
