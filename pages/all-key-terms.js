@@ -170,7 +170,7 @@ export default function Home() {
   const checkAnswer = async (studentAnswer = answer) => {
     setState("loadingAnswer");
 
-    const prompt = `A student was given an AP US History question: "${question.question}". The student answered "${studentAnswer}". Please assess the answer and provide feedback directed at the student. Make sure to be polite—this isn't an exam and we want to help them learn. You MUST (ABSOLUTELY MUST) respond in JSON format (NO BACKTICKS) with the following fields: "status" (either "correct", "incorrect", or "partial" — If someone is 75% there, give them "correct" instead of "partial". just make sure to fill in gaps with review), "feedback" (a string with feedback on the answer- if they ask for an explanation, don't return this field), and "review" (a brief review of the topic discussed in the question in 3 sentences or less. directly explain it and include relevant details). Do not include any other text or explanation. The JSON should look like this: { "status": "correct", "feedback": "...", "review": "..." }`;
+    const prompt = `A student was given an AP US History question: "${question.question}". The student answered "${studentAnswer}". Please assess the answer and provide feedback directed at the student. Make sure to be polite—this isn't an exam and we want to help them learn. You MUST (ABSOLUTELY MUST) respond in JSON format (NO BACKTICKS) with the following fields: "status" (either "correct", "incorrect", or "partial" — be generous with the correct status. just make sure to fill in gaps with review), "feedback" (a string with feedback on the answer- if they ask for an explanation, don't return this field), and "review" (a brief review of the topic discussed in the question in 3 sentences or less. directly explain it and include relevant details). Do not include any other text or explanation. The JSON should look like this: { "status": "correct", "feedback": "...", "review": "..." }`;
 
     const response = await ai(prompt);
     const json = JSON.parse(response);
@@ -202,7 +202,7 @@ export default function Home() {
         <Text h2 mb={0} mt={0}>APUSH<em>.pro</em> Key Terms Practice</Text>
         <Text h3 mt={0} mb={3} style={{
           color: "#555",
-        }}>{displayUnit}</Text>
+        }}>{displayUnit || "All Units"}</Text>
 
 
         {question && <Question question={question} onExplain={() => {
