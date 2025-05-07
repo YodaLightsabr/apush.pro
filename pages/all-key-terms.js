@@ -7,6 +7,7 @@ import { ArrowRight, HelpCircle, Plus } from "@geist-ui/icons";
 import { useEffect, useState } from "react";
 import ai from "@/lib/ai";
 import { keyEventsQuestions } from "@/lib/questionLibrary";
+import { useSync } from "@/lib/sync";
 
 function Question({ question, onExplain, onSave, loading, startedLoadingAt }) {
   return (
@@ -104,7 +105,9 @@ function IndefiniteProgress({ startedAt, style }) {
 }
 
 export default function Home() {
+  const { unit } = useSync();
   const [question, setQuestion] = useState(null);
+  const [completedQuestions, setCompletedQuestions] = useState([]);
 
 
   const [state, setState_raw] = useState("loading");
@@ -116,16 +119,42 @@ export default function Home() {
 
   const [answer, setAnswer] = useState("");
 
-  useEffect(() => {
-    const fetchQuestion = async () => {
-      setQuestion({
-        number: 1,
-        question: "What was the outcome of the battle of Gettysburg, and what impact did it have on the war?",
+
+
+  const nextQuestion = () => {
+    if (question?.question) {
+      setCompletedQuestions(completedQuestions => {
+        return [...completedQuestions, question.question];
       });
-      setState("question");
     }
 
-    fetchQuestion();
+    setState("loading");
+    setAnswer("");
+
+    const unit = localStorage.getItem("unit");
+
+    const availableQuestions = keyEventsQuestions.filter(potentialQuestion => {
+      if (completedQuestions.includes(potentialQuestion.question)) return false;
+      const unitFilter = unit == "1/2" ? 1 : +unit;
+      if (unitFilter == "all") return true;
+      return potentialQuestion.unit == unitFilter;
+    })
+
+    const nextQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+    const questionText = nextQuestion.questions[Math.floor(Math.random() * nextQuestion.questions.length)];
+
+    setQuestion(currentQuestion => {
+      return {
+        number: (currentQuestion?.number || 0) + 1,
+        question: questionText,
+        unit: nextQuestion.unit,
+      }
+    });
+    setState("question");
+  }
+
+  useEffect(() => {
+    nextQuestion();
   }, []);
 
 
@@ -161,21 +190,6 @@ export default function Home() {
 
   }
 
-  const nextQuestion = async () => {
-    setState("loading");
-    setAnswer("");
-
-    const nextQuestion = keyEventsQuestions[Math.floor(Math.random() * keyEventsQuestions.length)];
-    const question = nextQuestion.questions[Math.floor(Math.random() * nextQuestion.questions.length)];
-
-    setQuestion(currentQuestion => {
-      return {
-        number: currentQuestion.number + 1,
-        question
-      }
-    });
-    setState("question");
-  }
 
   return (
     <>

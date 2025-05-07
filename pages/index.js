@@ -5,10 +5,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { Button, Card, Page, Tabs, Text } from '@geist-ui/core'
 import Link from "next/link";
+import { useSync } from "@/lib/sync";
 
 
 
 export default function Home() {
+  const { unit, setUnit, displayUnit } = useSync();
   return (
     <>
       <Head>
@@ -26,7 +28,7 @@ export default function Home() {
           <Tabs initialValue="all" style={{
             width: "min-content",
             margin: "0 auto",
-          }}>
+          }} onChange={setUnit} value={unit}>
             <Tabs.Item label="All Units" value="all" />
             <Tabs.Item label="Units 1 & 2" value="1/2" />
             <Tabs.Item label="Unit 3" value="3" />
@@ -48,7 +50,7 @@ export default function Home() {
           }}>
             <Card style={{
               textAlign: "center",
-              minWidth: "300px",
+              minWidth: "400px",
             }} padding={1}>
               <div style={{
                 display: "flex",
@@ -57,16 +59,16 @@ export default function Home() {
                 alignItems: "center",
                 gap: "1rem",
               }}>
-              <Text h3 mt={0} mb={1}>Topic Practice</Text>
+              <Text h3 mt={0} mb={1}>{displayUnit} Topic Practice</Text>
                 <Link href="/all-key-terms"><Button type="secondary-light" auto>All Key Terms</Button></Link>
-                <Link href="#"><Button type="secondary-light" auto>Key Events</Button></Link>
-                <Link href="#"><Button type="secondary-light" auto>Key People</Button></Link>
+                <Link href="#"><Button disabled type="secondary-light" auto>Key Events</Button></Link>
+                <Link href="#"><Button disabled type="secondary-light" auto>Key People</Button></Link>
               </div>
             </Card>
 
             <Card style={{
               textAlign: "center",
-              minWidth: "300px",
+              minWidth: "400px",
             }} padding={1}>
               <div style={{
                 display: "flex",
@@ -75,10 +77,10 @@ export default function Home() {
                 alignItems: "center",
                 gap: "1rem",
               }}>
-              <Text h3 mt={0} mb={1}>LEQ Practice</Text>
-                <Link href="#"><Button type="secondary-light" auto>Full-Length LEQ</Button></Link>
-                <Link href="#"><Button type="secondary-light" auto>Background Info & Thesis</Button></Link>
-                <Link href="#"><Button type="secondary-light" auto>Evidence & Analysis</Button></Link>
+              <Text h3 mt={0} mb={1}>{displayUnit} LEQ Practice</Text>
+                <Link href="#"><Button disabled type="secondary-light" auto>Full-Length LEQ</Button></Link>
+                <Link href="#"><Button disabled type="secondary-light" auto>Background Info & Thesis</Button></Link>
+                <Link href="#"><Button disabled type="secondary-light" auto>Evidence & Analysis</Button></Link>
               </div>
             </Card>
           </div>

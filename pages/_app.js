@@ -1,3 +1,4 @@
+import { SyncProvider, useSync } from "@/lib/sync";
 import "@/styles/globals.css";
 import { GeistProvider, CssBaseline, Text, Page, Button, Drawer } from '@geist-ui/core'
 import { ChevronUpDown, Circle, Settings } from "@geist-ui/icons";
@@ -8,7 +9,7 @@ function StudyListButton() {
   const [state, setState] = useState(false);
   return (
     <>
-    <Button onClick={() => setState(true)} icon={<ChevronUpDown />} auto>Study List</Button>
+      <Button onClick={() => setState(true)} icon={<ChevronUpDown />} auto>Study List</Button>
       <Drawer visible={state} onClose={() => setState(false)} placement="right">
         <Drawer.Title>Study List</Drawer.Title>
         <Drawer.Subtitle>0 items</Drawer.Subtitle>
@@ -17,42 +18,53 @@ function StudyListButton() {
         </Drawer.Content>
       </Drawer>
 
-      </>
+    </>
+  );
+}
+
+function Unit () {
+  const { displayUnit } = useSync();
+
+  return (
+    <Text h4 margin={0}>{displayUnit || "All Units"}</Text>
   );
 }
 
 export default function App({ Component, pageProps }) {
   return (
     <GeistProvider>
-      <CssBaseline /> {/* --> base styles */}
+      <SyncProvider>
+        <CssBaseline /> {/* --> base styles */}
 
-      <div style={{
-            padding: "1rem",
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center",
-            borderBottom: "1px solid #eee",
-            position: "sticky",
-            top: "0px",
-            left: "0px",
-            width: "100%",
-            zIndex: "100",
+        <div style={{
+          padding: "1rem",
+          display: "flex",
+          justifyContent: "start",
+          alignItems: "center",
+          borderBottom: "1px solid #eee",
+          position: "sticky",
+          top: "0px",
+          left: "0px",
+          width: "100%",
+          zIndex: "100",
           boxSizing: "border-box",
-
+          gap: "1.5rem",
 
         }}>
-            <Link href="/" style={{
-                color: "inherit",
-            }}>
-        <Text h3 margin={0}>APUSH<em>.pro</em></Text>
-        </Link>
+          <Link href="/" style={{
+            color: "inherit",
+          }}>
+            <Text h3 margin={0}>APUSH<em>.pro</em></Text>
+          </Link>
 
-        <div style={{ flexGrow: 1 }}></div>
+          <div style={{ flexGrow: 1 }}></div>
 
-      <StudyListButton />
+          <Unit />
+
+          <StudyListButton />
 
         </div>
-        
+
         <Page style={{
           textAlign: "center",
           height: "calc(100vh - 69px)!important",
@@ -62,8 +74,9 @@ export default function App({ Component, pageProps }) {
           marginRight: "0px",
           width: "100%",
         }}>
-      <Component {...pageProps} /> {/* --> your application */}
-      </Page>
+          <Component {...pageProps} /> {/* --> your application */}
+        </Page>
+      </SyncProvider>
     </GeistProvider>
   );
 }
