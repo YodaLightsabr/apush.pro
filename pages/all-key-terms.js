@@ -114,6 +114,11 @@ export default function Home() {
   const { displayUnit } = useSync();
   const [question, setQuestion] = useState(null);
   const [completedQuestions, setCompletedQuestions] = useState([]);
+  const [stats, setStats] = useState({
+    correct: 0,
+    partial: 0,
+    incorrect: 0,
+  });
 
 
   const [state, setState_raw] = useState("loading");
@@ -183,6 +188,13 @@ export default function Home() {
       return question;
     });
 
+    setStats(stats => {
+      return {
+        ...stats,
+        [json.status]: stats[json.status] + 1,
+      };
+    });
+
     setState("answer");
 
   }
@@ -213,12 +225,15 @@ export default function Home() {
 
         <div style={{
           position: "fixed",
-          bottom: "20px",
+          bottom: "0px",
           width: sm ? "calc(100% - 6rem)" : "calc(100% - 2rem)",
+          maxWidth: "800px",
           left: "50%",
           transform: "translateX(-50%)",
           padding: "1rem",
+          paddingBottom: "0.5rem",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: "white",
@@ -226,16 +241,33 @@ export default function Home() {
           zIndex: "100",
 
         }}>
-          <Textarea value={answer} onChange={e => setAnswer(e.target.value)} width="800px" scale={4 / 3} placeholder="Your answer" disabled={state != "question"} onKeyDown={e => {
+          <Textarea value={answer} onChange={e => setAnswer(e.target.value)} width="100%" scale={4 / 3} placeholder="Your answer" disabled={state != "question"} onKeyDown={e => {
             if (e.key === "Enter") {
               e.preventDefault();
               checkAnswer();
             }
+          }} style={{
+            width: "100%"
           }}></Textarea>
+          <Text small mt={"4px"} style={{
+            width: "800px",
+            maxWidth: "100%",
+            textAlign: "left",
+            opacity: "0.8",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "start",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}>
+            <Text type="success" span>{stats.correct} correct</Text> •
+            <Text type="warning" span>{stats.partial} partial</Text> •
+            <Text type="error" span>{stats.incorrect} incorrect</Text>
+            </Text>
           {state == "answer" ? <Button auto onClick={nextQuestion} icon={<ArrowRight />} type="success-light" style={{
             position: "absolute",
             right: "max(calc(50% - 400px + 1rem), 2rem)",
-            top: "50%",
+            top: "43%",
             transform: "translateY(-50%)",
           }}>Next Question</Button> : null}
         </div>
