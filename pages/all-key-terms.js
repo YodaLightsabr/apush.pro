@@ -175,7 +175,23 @@ export default function Home() {
   const checkAnswer = async (studentAnswer = answer) => {
     setState("loadingAnswer");
 
-    const prompt = `A student was given an AP US History question: "${question.question}". The student answered "${studentAnswer}". Please assess the answer and provide feedback directed at the student. Make sure to be polite—this isn't an exam and we want to help them learn. You MUST (ABSOLUTELY MUST) respond in JSON format (NO BACKTICKS) with the following fields: "status" (either "correct", "incorrect", or "partial" — be generous with the correct status. just make sure to fill in gaps with review), "feedback" (a string with feedback on the answer- if they ask for an explanation, don't return this field), and "review" (a brief review of the topic discussed in the question in 3 sentences or less. directly explain it and include relevant details). Do not include any other text or explanation. The JSON should look like this: { "status": "correct", "feedback": "...", "review": "..." }`;
+    const prompt = `
+A student was given an AP US History question: "${question.question}".
+
+The student answered "${studentAnswer}".
+
+Please assess the answer and provide feedback directed at the student. Make sure to be polite—this isn't an exam and we want to help them learn.
+
+You MUST (ABSOLUTELY MUST) respond in JSON format (NO BACKTICKS) with the following fields:
+  "status" (one of the following:
+    "incorrect" – the answer is factually inaccurate or shows little understanding of the topic
+    "partial" – the answer is factually accurate, but it's either too short or shows potentially harmful learning gaps
+    "correct" – the answer is factually accurate and shows moderate understanding of the topic (1 or 2 sentences is sufficient)
+  ),
+  "feedback" (a string with feedback on the answer- if they ask for an explanation, don't return this field),
+  "review" (a brief review of the topic discussed in the question in 3 sentences or less. directly explain it and include relevant details)
+  
+Do not include any other text or explanation. The JSON should look like this: { "status": "correct", "feedback": "...", "review": "..." }`;
 
     const response = await ai(prompt);
     const json = JSON.parse(response);
