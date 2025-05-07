@@ -161,28 +161,16 @@ export default function Home() {
   const checkAnswer = async (studentAnswer = answer) => {
     setState("loadingAnswer");
 
-    const prompt = `A student was given an AP US History question: "${question.question}". The student answered "${studentAnswer}". Please assess the answer and provide feedback directed at the student. Make sure to be polite—this isn't an exam and we want to help them learn. You MUST (ABSOLUTELY MUST) respond in JSON format (NO BACKTICKS) with the following fields: "status" (either "correct", "incorrect", or "partial") and "feedback" (a string with feedback on the answer- if they ask for an explanation, don't return this field). Do not include any other text or explanation. The JSON should look like this: { "status": "correct", "feedback": "..." }`;
+    const prompt = `A student was given an AP US History question: "${question.question}". The student answered "${studentAnswer}". Please assess the answer and provide feedback directed at the student. Make sure to be polite—this isn't an exam and we want to help them learn. You MUST (ABSOLUTELY MUST) respond in JSON format (NO BACKTICKS) with the following fields: "status" (either "correct", "incorrect", or "partial" — If someone is 75% there, give them "correct" instead of "partial". just make sure to fill in gaps with review), "feedback" (a string with feedback on the answer- if they ask for an explanation, don't return this field), and "review" (a brief review of the topic discussed in the question in 3 sentences or less. directly explain it and include relevant details). Do not include any other text or explanation. The JSON should look like this: { "status": "correct", "feedback": "...", "review": "..." }`;
 
     const response = await ai(prompt);
     const json = JSON.parse(response);
-
-    let review = null;
-
-    if (json.status != "correct") {
-      const reviewResponse = await ai([
-        { role: "user", content: prompt },
-        { role: "assistant", content: response },
-        { role: "user", content: "Thank you. Now, I need you to provide a brief review for that student who got the question incorrect. Point them in the right direction in no more than 3 sentences. Don't provide them with resources: directly explain the event / key term in a way that helps prepare them for the exam. Don't frame it as a way to answer the question correctly– just explain it with any relevant details. Respond in the following format (JSON, NO BACKTICKS): \"review\" (a string with review info)" },
-      ]);
-
-      review = JSON.parse(reviewResponse).review;
-    }
 
     setQuestion(question => {
       question[json.status] = true;
       question.feedback = json.feedback;
       question.answer = studentAnswer;
-      question.review = review;
+      question.review = json.review;
       return question;
     });
 

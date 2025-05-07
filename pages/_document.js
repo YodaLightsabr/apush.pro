@@ -1,6 +1,8 @@
-import { Html, Head, Main, NextScript } from "next/document";
+import Document, { Html, Head, Main, NextScript } from "next/document";
+import { CssBaseline } from '@geist-ui/core'
+import { Fragment } from "react";
 
-export default function Document() {
+export default function MyDocument() {
   return (
     <Html lang="en">
       <Head />
@@ -10,4 +12,19 @@ export default function Document() {
       </body>
     </Html>
   );
+}
+
+MyDocument.getInitialProps = async (ctx) => {
+  const initialProps = await Document.getInitialProps(ctx)
+  const styles = CssBaseline.flush()
+
+  return {
+    ...initialProps,
+    styles: [
+      <Fragment key="1">
+        {initialProps.styles}
+        {styles}
+      </Fragment>,
+    ],
+  }
 }
